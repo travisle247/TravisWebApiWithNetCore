@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using TravisWebApiWithAspCore.Dao;
 using TravisWebApiWithAspCore.Models;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace TravisWebApiWithAspCore.Controllers
 {
@@ -48,6 +49,16 @@ namespace TravisWebApiWithAspCore.Controllers
                 return BadRequest();
             }
 
+            if (pointOfInterest.Name == pointOfInterest.Description)
+			{
+                ModelState.AddModelError("Descriptiom","Name and desciption can not be the same.");
+			}
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
             var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
 
             if(city==null)
@@ -68,5 +79,107 @@ namespace TravisWebApiWithAspCore.Controllers
 
             return CreatedAtRoute("GetPointOfInterest", new { cityId = cityId, id = finalPointOfInterest.Id }, finalPointOfInterest );
         }
+
+        [HttpPut("{cityId}/pointsofinterest/{id}")]
+        public IActionResult UpdatePointOfInterest(int cityId, int id, [FromBody] PointOfInterestUpdateDto pointOfInterest)
+        {
+			if (pointOfInterest == null)
+			{
+				return BadRequest();
+			}
+
+			if (pointOfInterest.Name == pointOfInterest.Description)
+			{
+				ModelState.AddModelError("Description","Name and desciption can not be the same.");
+			}
+
+			if (!ModelState.IsValid)
+			{
+				return BadRequest();
+			}
+
+			var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
+
+			if (city == null)
+			{
+				return NotFound();
+			}
+
+            var selectedPointOfInterest = city.PointsOfInterest.FirstOrDefault(x => x.Id == id);
+
+            if(selectedPointOfInterest == null)
+            {
+                return NotFound();
+            }
+
+            selectedPointOfInterest.Name = pointOfInterest.Name;
+            selectedPointOfInterest.Description = pointOfInterest.Description;
+
+            return NoContent();
+		}
+
+        [HttpPatch("{cityId}/pointsofinterest/{id}")]
+        public IActionResult PartiallyUpdatePointOfInterest(int cityId, int id, [FromBody] JsonPatchDocument<PointOfInterestUpdateDto> patchDoc)
+		{
+            if (patchDoc == null)
+			{
+				return BadRequest();
+			}
+			
+
+			var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
+
+			if (city == null)
+			{
+				return NotFound();
+			}
+
+			var selectedPointOfInterest = city.PointsOfInterest.FirstOrDefault(x => x.Id == id);
+
+			if (selectedPointOfInterest == null)
+			{
+				return NotFound();
+			}
+
+            var pointOfInterestToPatch = new PointOfInterestUpdateDto()
+            {
+                Name = selectedPointOfInterest.Name,
+                Description = selectedPointOfInterest.Description
+            };
+			
+            patchDoc.ApplyTo(pointOfInterestToPatch);
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+			selectedPointOfInterest.Name = pointOfInterestToPatch.Name;
+			selectedPointOfInterest.Description = pointOfInterestToPatch.Description;
+
+			return NoContent();
+		}
+
+        [HttpDelete("{cityId}/pointsofinterest/{id}")]
+        public IActionResult DeletePointOfInterest(int cityId, int id)
+        {
+			var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
+
+			if (city == null)
+			{
+				return NotFound();
+			}
+
+			var selectedPointOfInterest = city.PointsOfInterest.FirstOrDefault(x => x.Id == id);
+
+			if (selectedPointOfInterest == null)
+			{
+				return NotFound();
+			}
+
+            city.PointsOfInterest.Remove(selectedPointOfInterest);
+
+
+			return NoContent();
+
+		}
     }
 }
