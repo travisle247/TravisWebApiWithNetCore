@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
+using TravisWebApiWithAspCore.Services;
 
 namespace TravisWebApiWithAspCore
 {
@@ -31,14 +32,22 @@ namespace TravisWebApiWithAspCore
         {
             // Add framework services.
             services.AddMvc()
-                .AddJsonOptions(o=>
+                .AddJsonOptions(o =>
                 {
-                    if (o.SerializerSettings.ContractResolver!=null)
+                    if (o.SerializerSettings.ContractResolver != null)
                     {
                         var castedResolver = o.SerializerSettings.ContractResolver as DefaultContractResolver;
                         castedResolver.NamingStrategy = null;
                     }
                 });
+
+#if DEBUG
+            services.AddTransient<IMailService, LocalMailService>();
+
+#else
+            services.AddTransient<IMailService, CloudMailService>();
+#endif
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -8,6 +8,7 @@ using TravisWebApiWithAspCore.Dao;
 using TravisWebApiWithAspCore.Models;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.Extensions.Logging;
+using TravisWebApiWithAspCore.Services;
 
 namespace TravisWebApiWithAspCore.Controllers
 {
@@ -16,10 +17,12 @@ namespace TravisWebApiWithAspCore.Controllers
     public class PointsOfInterestController : Controller
     {
         private ILogger<PointsOfInterestController> _logger;
+        private IMailService _mailService;
 
-        public PointsOfInterestController(ILogger<PointsOfInterestController> logger)
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger, IMailService mailService)
         {
             _logger = logger;
+            _mailService = mailService;
         }
 
         [HttpGet("{cityId}/pointsofinterest")]
