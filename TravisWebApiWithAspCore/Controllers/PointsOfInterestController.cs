@@ -27,7 +27,6 @@ namespace TravisWebApiWithAspCore.Controllers
         {
             try
             {
-                throw new Exception("Exception sample");
                 var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
                 if (city == null)
                 {
