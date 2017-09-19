@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using TravisWebApiWithAspCore.Dao;
 using TravisWebApiWithAspCore.Models;
 using Microsoft.AspNetCore.JsonPatch;
+using Microsoft.Extensions.Logging;
 
 namespace TravisWebApiWithAspCore.Controllers
 {
@@ -14,15 +15,33 @@ namespace TravisWebApiWithAspCore.Controllers
     [Route("api/cities/")]
     public class PointsOfInterestController : Controller
     {
+        private ILogger<PointsOfInterestController> _logger;
+
+        public PointsOfInterestController(ILogger<PointsOfInterestController> logger)
+        {
+            _logger = logger;
+        }
+
         [HttpGet("{cityId}/pointsofinterest")]
         public IActionResult GetPointsOfInterest(int cityId)
         {
-            var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
-            if(city == null)
+            try
             {
-                return NotFound();
+                throw new Exception("Exception sample");
+                var city = CitiesDao.Current.Cities.FirstOrDefault(x => x.Id == cityId);
+                if (city == null)
+                {
+                    _logger.LogInformation($"City with {cityId} was not found in list");
+                    return NotFound();
+                }
+                return Ok(city.PointsOfInterest);
             }
-            return Ok(city.PointsOfInterest);
+            catch(Exception ex)
+            {
+                _logger.LogCritical("Super wrong",ex);
+                return StatusCode(500, "A problem happened while handling your request.");
+            }
+            
         }
 
         [HttpGet("{cityId}/pointsofinterest/{id}",Name ="GetPointOfInterest")]
