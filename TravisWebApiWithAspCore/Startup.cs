@@ -10,6 +10,9 @@ using Microsoft.Extensions.Logging;
 using Newtonsoft.Json.Serialization;
 using NLog.Extensions.Logging;
 using TravisWebApiWithAspCore.Services;
+using TravisWebApiWithAspCore.Entities;
+using Microsoft.EntityFrameworkCore;
+using MySQL.Data.EntityFrameworkCore.Extensions;
 
 namespace TravisWebApiWithAspCore
 {
@@ -47,7 +50,15 @@ namespace TravisWebApiWithAspCore
 #else
             services.AddTransient<IMailService, CloudMailService>();
 #endif
+            var sqlConnectionString = Configuration.GetConnectionString("MySqlConnectionString");
 
+            services.AddDbContext<CityInfoContext>(options =>
+                options.UseMySQL(sqlConnectionString)
+            );
+
+           // services.AddDbContext<CityInfoContext>(options =>
+           //    options.UseSqlServer(sqlConnectionString)
+           //);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

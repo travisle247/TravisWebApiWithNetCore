@@ -89,7 +89,7 @@ namespace TravisWebApiWithAspCore.Controllers
 
             var maxPointOfInterestId = CitiesDao.Current.Cities.SelectMany(c => c.PointsOfInterest).Max(p => p.Id);
 
-            var finalPointOfInterest = new PointsOfInterest()
+            var finalPointOfInterest = new PointsOfInterestDto()
             {
                 Id = ++maxPointOfInterestId,
                 Name = pointOfInterest.Name,

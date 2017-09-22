@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace TravisWebApiWithAspCore.Models
 {
-    public class City
+    public class CityDto
     {
         public int Id { get; set; }
 
@@ -13,7 +13,7 @@ namespace TravisWebApiWithAspCore.Models
 
         public string Description { get; set; }
 
-        public ICollection<PointsOfInterest> PointsOfInterest { get; set; } = new List<PointsOfInterest>();
+        public ICollection<PointsOfInterestDto> PointsOfInterest { get; set; } = new List<PointsOfInterestDto>();
 
         public int NumberOfPointsOfInterest
         {

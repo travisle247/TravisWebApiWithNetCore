@@ -10,21 +10,21 @@ namespace TravisWebApiWithAspCore.Dao
     {
         public static CitiesDao Current { get; } = new CitiesDao();
 
-        public List<City> Cities { get; set; }
+        public List<CityDto> Cities { get; set; }
 
         public CitiesDao()
         {
-            Cities = new List<City>
+            Cities = new List<CityDto>
             {
-                new City{Id=1,Name="Los Angeles" , Description= "City of Angel", PointsOfInterest=new List<PointsOfInterest>()
+                new CityDto{Id=1,Name="Los Angeles" , Description= "City of Angel", PointsOfInterest=new List<PointsOfInterestDto>()
                     {
-                        new PointsOfInterest()
+                        new PointsOfInterestDto()
                         {
                             Id=1,
                             Description="Beach",
                             Name="Santa Monica"
                         },
-                        new PointsOfInterest()
+                        new PointsOfInterestDto()
                         {
                             Id=2,
                             Description="Movie",
@@ -32,8 +32,8 @@ namespace TravisWebApiWithAspCore.Dao
                         },
                     }
                 },
-                new City{Id=2,Name="Dallas" , Description= "City of Business"},
-                new City{Id=3,Name="Atlanta" , Description= "City of Greenery"},
+                new CityDto{Id=2,Name="Dallas" , Description= "City of Business"},
+                new CityDto{Id=3,Name="Atlanta" , Description= "City of Greenery"},
             };
         }
     }
