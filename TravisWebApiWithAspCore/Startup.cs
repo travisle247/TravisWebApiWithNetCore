@@ -50,7 +50,7 @@ namespace TravisWebApiWithAspCore
 #else
             services.AddTransient<IMailService, CloudMailService>();
 #endif
-            var sqlConnectionString = Configuration.GetConnectionString("MySqlConnectionString");
+            var sqlConnectionString = Configuration["MySqlConnectionStrings:DataAccessMySqlProvider"];
 
             services.AddDbContext<CityInfoContext>(options =>
                 options.UseMySQL(sqlConnectionString)
