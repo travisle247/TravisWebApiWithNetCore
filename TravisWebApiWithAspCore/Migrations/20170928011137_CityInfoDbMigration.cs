@@ -29,6 +29,7 @@ namespace TravisWebApiWithAspCore.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("MySQL:AutoIncrement", true),
                     CityId = table.Column<int>(nullable: false),
+                    Description = table.Column<string>(maxLength: 200, nullable: false),
                     Name = table.Column<string>(maxLength: 50, nullable: false)
                 },
                 constraints: table =>

@@ -81,7 +81,8 @@ namespace TravisWebApiWithAspCore
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory,
+            CityInfoContext cityInfoContext)
         {
             loggerFactory.AddConsole(Configuration.GetSection("Logging"));
             loggerFactory.AddDebug();
@@ -98,13 +99,18 @@ namespace TravisWebApiWithAspCore
                 app.UseExceptionHandler();
             }
 
+            cityInfoContext.EnsureSeedDataForContext();
+
             AutoMapper.Mapper.Initialize(cfg=>
             {
                 cfg.CreateMap<City,CityWithoutPointOfInterestDto>();
                 cfg.CreateMap<City, CityDto>();
-
-			});
-
+                cfg.CreateMap<PointOfInterest, PointsOfInterestDto>();
+                cfg.CreateMap<PointOfInterestCreationDto, PointOfInterest>();
+                cfg.CreateMap<PointOfInterestUpdateDto, PointOfInterest>();
+                cfg.CreateMap<PointOfInterest, PointOfInterestUpdateDto>();
+            });
+      
             app.UseStatusCodePages();
 
             app.UseMvc();

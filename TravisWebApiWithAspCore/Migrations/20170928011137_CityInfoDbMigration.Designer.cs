@@ -8,7 +8,7 @@ using TravisWebApiWithAspCore.Entities;
 namespace TravisWebApiWithAspCore.Migrations
 {
     [DbContext(typeof(CityInfoContext))]
-    [Migration("20170926010704_CityInfoDbMigration")]
+    [Migration("20170928011137_CityInfoDbMigration")]
     partial class CityInfoDbMigration
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,6 +39,10 @@ namespace TravisWebApiWithAspCore.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<int>("CityId");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200);
 
                     b.Property<string>("Name")
                         .IsRequired()

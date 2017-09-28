@@ -39,6 +39,10 @@ namespace TravisWebApiWithAspCore.Migrations
 
                     b.Property<int>("CityId");
 
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasMaxLength(200);
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50);
