@@ -13,12 +13,17 @@ using TravisWebApiWithAspCore.Services;
 using TravisWebApiWithAspCore.Entities;
 using Microsoft.EntityFrameworkCore;
 using MySQL.Data.EntityFrameworkCore.Extensions;
+using System.Runtime.InteropServices;
+using TravisWebApiWithAspCore.Models;
 
 namespace TravisWebApiWithAspCore
 {
     public class Startup
     {
-        public Startup(IHostingEnvironment env)
+        private bool isWindows = false;
+        private bool isMac = false;
+
+		public Startup(IHostingEnvironment env)
         {
             var builder = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
@@ -26,9 +31,11 @@ namespace TravisWebApiWithAspCore
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables();
             Configuration = builder.Build();
+            isWindows = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+            isMac = RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
         }
 
-        public IConfigurationRoot Configuration { get; }
+        public static IConfigurationRoot Configuration { get; set; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
@@ -50,15 +57,27 @@ namespace TravisWebApiWithAspCore
 #else
             services.AddTransient<IMailService, CloudMailService>();
 #endif
-            var sqlConnectionString = Configuration["MySqlConnectionStrings:DataAccessMySqlProvider"];
 
-            services.AddDbContext<CityInfoContext>(options =>
-                options.UseMySQL(sqlConnectionString)
-            );
+			if(isWindows == true)
+            {
+				var sqlConnectionString = Configuration["MySqlConnectionStrings:DataAccessMySqlProviderWindow"];
 
-           // services.AddDbContext<CityInfoContext>(options =>
-           //    options.UseSqlServer(sqlConnectionString)
-           //);
+				services.AddDbContext<CityInfoContext>(options =>
+					options.UseMySQL(sqlConnectionString)
+				);
+            }
+
+            if(isMac == true)
+            {
+				var sqlConnectionString = Configuration["MySqlConnectionStrings:DataAccessMySqlProviderMac"];
+
+				services.AddDbContext<CityInfoContext>(options =>
+					options.UseMySQL(sqlConnectionString)
+				);
+            }
+
+            services.AddScoped<ICityInfoRepository,CityInfoRespository>();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -78,6 +97,13 @@ namespace TravisWebApiWithAspCore
             {
                 app.UseExceptionHandler();
             }
+
+            AutoMapper.Mapper.Initialize(cfg=>
+            {
+                cfg.CreateMap<City,CityWithoutPointOfInterestDto>();
+                cfg.CreateMap<City, CityDto>();
+
+			});
 
             app.UseStatusCodePages();
 
